@@ -103,8 +103,47 @@ const allPost = async(req,res)=>{
     }
 };
 
+const getOnePost = async(req,res)=>{
+    try {
+        let id = req.params.id;
+        const single = await models.findAll({where:{id:id}});
+        if(single.length === 0){
+            res.status(404).json({
+                message: `post with this id ${id} not found`
+            })
+        }else{
+        res.status(200).json({
+            data: single
+        })
+        }
+    } catch (error) {
+    res.status(404).json({
+         message: error.message
+    })
+    }
+};
+
+const deletePost = async(req,res)=>{
+    try {
+        let id = req.params.id;
+        const single = await models.findAll({where:{id:id}});
+        await fs.unlinkSync(single[0].image)
+        const del = await models.destroy({where:{id:id}})
+        res.status(200).json({
+            message: "Post deleted successfully"
+        })
+    } catch (error) {
+        res.status(400).json({
+            message: error.message
+        })
+    }
+}
+
+
 module.exports = {
     createPost,
     updatePost,
-    allPost
-}
+    allPost,
+    getOnePost,
+    deletePost
+};
