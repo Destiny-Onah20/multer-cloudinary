@@ -128,6 +128,7 @@ const deletePost = async(req,res)=>{
         let id = req.params.id;
         const single = await models.findAll({where:{id:id}});
         await fs.unlinkSync(single[0].image)
+        await cloudinary.uploader.destroy(single[0].cloudId)
         const del = await models.destroy({where:{id:id}})
         res.status(200).json({
             message: "Post deleted successfully"
