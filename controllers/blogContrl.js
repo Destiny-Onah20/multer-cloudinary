@@ -68,7 +68,6 @@ const updatePost = async(req,res)=>{
             const updated = await models.update(dataUpdate, {where:{id:id}})
             res.status(201).json({
                 message: "updated successfully",
-                data: updated
             })
         }else{
             res.status(400).json({
@@ -113,7 +112,7 @@ const getOnePost = async(req,res)=>{
             })
         }else{
         res.status(200).json({
-            data: single
+            data: single[0]
         })
         }
     } catch (error) {
@@ -129,10 +128,16 @@ const deletePost = async(req,res)=>{
         const single = await models.findAll({where:{id:id}});
         await fs.unlinkSync(single[0].image)
         await cloudinary.uploader.destroy(single[0].cloudId)
-        const del = await models.destroy({where:{id:id}})
-        res.status(200).json({
-            message: "Post deleted successfully"
-        })
+        const del = await models.destroy({where:{id:id}});
+        if(del === 0){
+            res.status(404).json({
+                message: "No user found"
+            })
+        }else{
+            res.status(200).json({
+                message: "Post deleted successfully"
+            })
+        }
     } catch (error) {
         res.status(400).json({
             message: error.message
